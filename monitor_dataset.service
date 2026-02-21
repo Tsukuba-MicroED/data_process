@@ -1,0 +1,15 @@
+[Unit]
+Description=Automatic microED data process
+After=syslog.target network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/xtal/scripts/monitor_dataset.sh
+WorkingDirectory=/home/xtal
+KillMode=process
+Restart=always
+
+
+[Install]
+WantedBy=default.target
+

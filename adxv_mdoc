@@ -1,0 +1,43 @@
+#!/bin/bash
+
+declare -A CL_TABLE=(
+    [250]="265"
+    [300]="312"
+    [400]="405"
+    ["500"]="500"
+    ["600"]="600"
+    ["800"]="800"
+    ["1000"]="1000"
+    ["1200"]="1200"
+    ["1500"]="1500"
+    ["2000"]="2000"
+)
+
+declare -A PS_TABLE=(
+    ["1"]="0.009"
+    ["2"]="0.018"
+    ["3"]="0.027"
+)
+
+declare -A VOL2WL=(
+    ["200"]="0.02508"
+    ["2"]="0.018"
+    ["3"]="0.027"
+)
+
+MDOC=`readlink -f $1`
+PREFIX=$(basename ${MDOC%.mrcs.mdoc})
+MRC=${PREFIX}_001.mrc.gz
+
+echo ${PREFIX} ${MRC}
+
+CAMERA_LENGTH=$(grep CameraLength ${MDOC} | awk '{printf($3)}')
+BINNING=$(grep Binning ${MDOC} | awk '{printf($3)}')
+VOLTAGE=$(grep Voltage ${MDOC} | awk '{printf($3)}')
+
+adxv -mrc \
+    -wavelength ${VOL2WL[${VOLTAGE::-5}]} \
+    -distance ${CL_TABLE[${CAMERA_LENGTH::-1}]} \
+    -pixelsize ${PS_TABLE[${BINNING::-1}]}\
+    -rings \
+    ${MRC}
